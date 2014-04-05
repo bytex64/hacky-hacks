@@ -1,0 +1,13 @@
+#!/usr/bin/perl
+use Net::Ping;
+
+$|++;
+$p = Net::Ping->new();
+while (1) {
+	if ($p->ping($ARGV[0],1)) {
+		print '.';
+		sleep(1);
+	} else {
+		print ' ';
+	}
+}

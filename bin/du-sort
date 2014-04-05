@@ -1,0 +1,28 @@
+#!/usr/bin/perl
+
+my @suffixes = ('','KiB','MiB','GiB');
+sub prettysize {
+        my $v = shift;
+        my $i = 0;
+        while ($v > 1024) {
+                $i++;
+                $v /= 1024.0;
+        }
+        return sprintf("%.1f",$v) . $suffixes[$i];
+}
+
+my @files;
+
+open DU, '-|', 'du', '-b', @ARGV;
+while (<DU>) {
+	/^(\d+)\s+(.*)$/;
+	push @files, [int($1), $2];
+}
+
+@files = sort {
+	$b->[0] <=> $a->[0];
+} @files;
+
+for (@files) {
+	printf("%-10s %s\n", prettysize($_->[0]), $_->[1]);
+}

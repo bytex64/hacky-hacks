@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec webframe http://dominionofawesome.com/pwgen/

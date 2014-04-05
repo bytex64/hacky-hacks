@@ -1,0 +1,12 @@
+#!/usr/bin/perl
+use LWP::Simple;
+use URI;
+
+my $baseuri = new URI($ARGV[0]);
+
+my $data = get($baseuri);
+
+while ($data =~ m#href=['"]([^'"]*)#g) {
+    my $uri = URI->new_abs($1, $baseuri);
+    print "$uri\n";
+}

@@ -1,0 +1,56 @@
+#!/usr/bin/perl
+use strict;
+
+my ($list1, $op, $list2) = @ARGV;
+
+unless ($list1 && $op && $list2) {
+	print <<HELP;
+usage: $0 <list1> <operator> <list2>
+
+where <list1> and <list2> are files with one item per line, and operator
+is one of:
+
+    union - merge sets together without duplicates
+    difference - Find all members of list1 not in list2
+    intersection - Find all members in both list1 and list2
+
+The result is printed to stdout.
+HELP
+}
+
+my (%a, %b);
+
+open LIST1, $list1;
+while (<LIST1>) {
+	chomp;
+	$a{$_} = 1;
+}
+close LIST1;
+
+open LIST2, $list2;
+if ($op =~ /^(u|\+)/) {
+	while (<LIST2>) {
+		chomp;
+		$a{$_} = 1;
+	}
+	while (my $k = each %a) {
+		print "$k\n";
+	}
+} elsif ($op =~ /^(d|\-)/) {
+	while (<LIST2>) {
+		chomp;
+		delete $a{$_};
+	}
+	while (my $k = each %a) {
+		print "$k\n";
+	}
+} elsif ($op =~ /^(i|^)/) {
+	while (<LIST2>) {
+		chomp;
+		$b{$_} = 1;
+	}
+	while (my $k = each %a) {
+		print "$k\n" if $a{$k} && $b{$k};
+	}
+}
+close LIST2;
