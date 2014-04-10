@@ -1,0 +1,20 @@
+#!/bin/bash
+
+ssh -t $1 'byobu -xR -S auto || byobu || /bin/bash'
+RET=$?
+if [ $RET == 255 ]; then
+	if [ -z "$ssh_try" ]; then
+		export ssh_try=3
+	else
+		export ssh_try=$((ssh_try - 1))
+	fi
+	# Re-exec and attempt to reconnect.
+	clear
+	if [ $ssh_try -gt 0 ]; then
+		echo "SSH failed.  Retrying connection.  $ssh_try attempts remaining."
+		exec $0 "$@"
+	else
+		echo "SSH failed. Goodbye."
+	fi
+fi
+exit $RET
